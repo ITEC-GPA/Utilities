@@ -1,0 +1,8 @@
+C:\Users\g.pacini\Workspace\Libs\MaffeisUtilities\MaffeisUtilities\bin\Release\netstandard2.0\MaffeisUtilities.deps.json
+C:\Users\g.pacini\Workspace\Libs\MaffeisUtilities\MaffeisUtilities\bin\Release\netstandard2.0\MaffeisUtilities.dll
+C:\Users\g.pacini\Workspace\Libs\MaffeisUtilities\MaffeisUtilities\bin\Release\netstandard2.0\MaffeisUtilities.pdb
+C:\Users\g.pacini\Workspace\Libs\MaffeisUtilities\MaffeisUtilities\obj\Release\netstandard2.0\MaffeisUtilities.csproj.AssemblyReference.cache
+C:\Users\g.pacini\Workspace\Libs\MaffeisUtilities\MaffeisUtilities\obj\Release\netstandard2.0\MaffeisUtilities.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\g.pacini\Workspace\Libs\MaffeisUtilities\MaffeisUtilities\obj\Release\netstandard2.0\MaffeisUtilities.csproj.CoreCompileInputs.cache
+C:\Users\g.pacini\Workspace\Libs\MaffeisUtilities\MaffeisUtilities\obj\Release\netstandard2.0\MaffeisUtilities.dll
+C:\Users\g.pacini\Workspace\Libs\MaffeisUtilities\MaffeisUtilities\obj\Release\netstandard2.0\MaffeisUtilities.pdb
