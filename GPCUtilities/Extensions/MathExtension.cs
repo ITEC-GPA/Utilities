@@ -91,6 +91,7 @@ namespace GPC.Utilities.Extensions
             if (multiple == 0)
                 return value;
 
+            multiple = Math.Abs(multiple);
             int reminder = Math.Abs(value) % multiple;
             if (reminder == 0)
                 return value;
@@ -105,20 +106,33 @@ namespace GPC.Utilities.Extensions
         /// </summary>
         /// <param name="value">The value to be rounded</param>
         /// <param name="multiple">The multiple to which the value should be rounded</param>
-        /// <param name="digits">The number of digits of the returned value</param>
+        /// <param name="digits">The number of digits of the returned value. If negative (default) no further rounding is applied</param>
         /// <returns>The rounded value</returns>
-        public static double RoundToMultiple(this double value, double multiple, int digits = 0)
+        /// <remarks>The value is rounded towards positive infinity (e.g. 0.23 -> 0.25 and -0.23 -> -0.20 with multiple 0.05).
+        /// A value that is already a multiple, apart from floating point noise, is returned unchanged</remarks>
+        public static double RoundToMultiple(this double value, double multiple, int digits = -1)
         {
-            if (multiple == 0)
+            if (multiple == 0 || double.IsNaN(value) || double.IsInfinity(value))
                 return value;
 
-            double reminder = Math.Abs(value) % multiple;
-            if (reminder == 0)
-                return value;
+            multiple = Math.Abs(multiple);
 
-            if (value < 0)
-                return -Math.Round(Math.Abs(value) - reminder, digits);
-            return Math.Round(value + multiple - reminder, digits);
+            double quotient = value / multiple;
+            double nearest = Math.Round(quotient);
+            double count = Math.Abs(quotient - nearest) < 1e-9 ? nearest : Math.Ceiling(quotient);
+
+            double result;
+            try
+            {
+                // decimal avoids results like 0.30000000000000004
+                result = (double)((decimal)count * (decimal)multiple);
+            }
+            catch (OverflowException)
+            {
+                result = count * multiple;
+            }
+
+            return digits >= 0 ? Math.Round(result, digits) : result;
         }
 
         #endregion

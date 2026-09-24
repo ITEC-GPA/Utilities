@@ -69,6 +69,12 @@ namespace GPC.Utilities.Graphics
             get => _watermark;
             set
             {
+                _watermark?.Dispose();
+                _watermark = null;
+
+                if (value is null)
+                    return;
+
                 _watermark = (Bitmap)value.Clone();
 
                 const byte ALPHA = 128;
@@ -221,49 +227,56 @@ namespace GPC.Utilities.Graphics
 
             try
             {
+                // Local copy: the margins are enlarged for the legend and the axis labels, Create() can be called more than once
+                float[] margins = (float[])_margins.Clone();
+
                 using (System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(image))
+                using (Font axisFont = new Font("Arial", 10))
                 {
                     // Draw the background
                     g.FillRectangle(Brushes.White, 0, 0, _w_bmp - 1, _h_bmp - 1);
                     g.DrawRectangle(Pens.Black, 0, 0, _w_bmp - 1, _h_bmp - 1);
                     using (Font font = new Font("Arial", 15))
+                    using (StringFormat format = new StringFormat())
                     {
-                        StringFormat format = new StringFormat();
                         format.Alignment = StringAlignment.Center;
                         g.DrawString(_title, font, Brushes.Black, new PointF(image.Width / 2, 5), format);
                     }
 
                     // Legend
-                    if (_drawLegend)
+                    if (_drawLegend && _curves.Count > 0)
                     {
                         using (Font font = new Font("Arial", 10))
+                        using (StringFormat format = new StringFormat())
                         {
                             float w_legend = _curves.Max(c => g.MeasureString(c.Name, font).Width) + 5;
                             float h_legend = g.MeasureString("ABC", font).Height;
 
-                            g.DrawRectangle(Pens.Black, _w_bmp - _margins[2] - 5 - w_legend, _margins[1] - 5, w_legend, (h_legend + 1) * _curves.Count + 5);
+                            g.DrawRectangle(Pens.Black, _w_bmp - margins[2] - 5 - w_legend, margins[1] - 5, w_legend, (h_legend + 1) * _curves.Count + 5);
 
-                            StringFormat format = new StringFormat();
                             format.Alignment = StringAlignment.Near;
                             format.LineAlignment = StringAlignment.Near;
-                            float y = _margins[1];
+                            float y = margins[1];
                             foreach (Curve curve in _curves)
                             {
                                 using (Brush brush = new SolidBrush(curve.Color))
-                                    g.DrawString(curve.Name, font, brush, new PointF(_w_bmp - _margins[2] - w_legend, y), format);
+                                    g.DrawString(curve.Name, font, brush, new PointF(_w_bmp - margins[2] - w_legend, y), format);
                                 y += h_legend + 1;
                             }
-                            _margins[2] += w_legend + 10;
+                            margins[2] += w_legend + 10;
                         }
                     }
 
                     // Calculate margin for numeric values of y axis
-                    Font axisFont = new Font("Arial", 10);
-                    _margins[0] += Math.Max(g.MeasureString(_min.ToString("N0"), axisFont).Width, g.MeasureString(_max.ToString("N0"), axisFont).Width);
+                    margins[0] += Math.Max(g.MeasureString(_min.ToString("N0"), axisFont).Width, g.MeasureString(_max.ToString("N0"), axisFont).Width);
 
-                    // Define logical viewport
-                    RectangleF srcRect = new RectangleF((float)0, (float)_min, (float)_max_x, (float)(_max - _min));
-                    RectangleF dstRect = new RectangleF(_margins[0], _margins[1], _w_bmp - _margins[0] - _margins[2], _h_bmp - _margins[1] - _margins[3]);
+                    // Define logical viewport (a null height would make the transformation singular)
+                    double yRange = _max - _min;
+                    if (yRange <= 0)
+                        yRange = 1.0;
+                    double xRange = _max_x > 0 ? _max_x : 1.0;
+                    RectangleF srcRect = new RectangleF((float)0, (float)_min, (float)xRange, (float)yRange);
+                    RectangleF dstRect = new RectangleF(margins[0], margins[1], _w_bmp - margins[0] - margins[2], _h_bmp - margins[1] - margins[3]);
 
                     System.Drawing.Drawing2D.GraphicsContainer container = g.BeginContainer(dstRect, srcRect, GraphicsUnit.Millimeter);
 
@@ -273,9 +286,11 @@ namespace GPC.Utilities.Graphics
 
                     PointF[] limits_crvs_pts = new PointF[2];
                     double[] limits_crvs_val = new double[2];
+                    bool hasCurvesLimits = false;
 
                     PointF[] limits_maxs_pts = new PointF[2];
                     double[] limits_maxs_val = new double[2];
+                    bool hasMaximumLimits = false;
 
                     if (showMaxMin)
                     {
@@ -299,82 +314,76 @@ namespace GPC.Utilities.Graphics
                             if (points_min[1].Y <= 0 && points_min[2].Y <= 0)
                                 g.DrawLine(Pens.Gray, points_min[1], points_min[2]);
 
-                            if (limits_maxs_pts[0] == null && limits_maxs_pts[1] == null)
+                            if (!hasMaximumLimits)
                             {
-                                limits_maxs_pts[0] = points_max[1];
+                                limits_maxs_pts[0] = points_min[1];
                                 limits_maxs_pts[1] = points_max[1];
                                 limits_maxs_val[0] = _maximumValues[n][1];
                                 limits_maxs_val[1] = _maximumValues[n][2];
-                            }
-                            else
-                            {
-                                if (points_min[1].Y < limits_maxs_pts[0].Y)
-                                {
-                                    limits_maxs_pts[0] = points_min[1];
-                                    limits_maxs_val[0] = _maximumValues[n][1];
-                                }
-                                if (points_min[2].Y < limits_maxs_pts[0].Y)
-                                {
-                                    limits_maxs_pts[0] = points_min[2];
-                                    limits_maxs_val[0] = _maximumValues[n + 1][1];
-                                }
-                                if (points_max[1].Y > limits_maxs_pts[1].Y)
-                                {
-                                    limits_maxs_pts[1] = points_max[1];
-                                    limits_maxs_val[1] = _maximumValues[n][2];
-                                }
-                                if (points_max[2].Y > limits_maxs_pts[1].Y)
-                                {
-                                    limits_maxs_pts[1] = points_max[2];
-                                    limits_maxs_val[1] = _maximumValues[n + 1][2];
-                                }
+                                hasMaximumLimits = true;
                             }
 
+                            if (points_min[1].Y < limits_maxs_pts[0].Y)
+                            {
+                                limits_maxs_pts[0] = points_min[1];
+                                limits_maxs_val[0] = _maximumValues[n][1];
+                            }
+                            if (points_min[2].Y < limits_maxs_pts[0].Y)
+                            {
+                                limits_maxs_pts[0] = points_min[2];
+                                limits_maxs_val[0] = _maximumValues[n + 1][1];
+                            }
+                            if (points_max[1].Y > limits_maxs_pts[1].Y)
+                            {
+                                limits_maxs_pts[1] = points_max[1];
+                                limits_maxs_val[1] = _maximumValues[n][2];
+                            }
+                            if (points_max[2].Y > limits_maxs_pts[1].Y)
+                            {
+                                limits_maxs_pts[1] = points_max[2];
+                                limits_maxs_val[1] = _maximumValues[n + 1][2];
+                            }
                         }
                     }
                     foreach (Curve curve in _curves)
                     {
-                        Pen pen = new Pen(curve.Color, 0.1F);
-
+                        using (Pen pen = new Pen(curve.Color, 0.1F))
                         for (int n = 0; n < curve.Values.Count - 1; n++)
                         {
                             PointF start = new PointF((float)curve.Values[n][0], (float)curve.Values[n][1] * scale);
                             PointF end = new PointF((float)curve.Values[n + 1][0], (float)curve.Values[n + 1][1] * scale);
-                            if (limits_crvs_pts[0] == null && limits_crvs_pts[1] == null)
+                            if (!hasCurvesLimits)
                             {
-                                limits_crvs_pts[0] = start.Y < end.Y ? start : end;
-                                limits_crvs_pts[1] = start.Y > end.Y ? start : end;
-                                limits_crvs_val[0] = limits_crvs_pts[0].Y;
-                                limits_crvs_val[1] = limits_crvs_pts[1].Y;
+                                limits_crvs_pts[0] = start;
+                                limits_crvs_pts[1] = start;
+                                limits_crvs_val[0] = curve.Values[n][1];
+                                limits_crvs_val[1] = curve.Values[n][1];
+                                hasCurvesLimits = true;
                             }
-                            else
+
+                            if (start.Y < limits_crvs_pts[0].Y)
                             {
-                                if (start.Y < limits_crvs_pts[0].Y)
-                                {
-                                    limits_crvs_pts[0] = start;
-                                    limits_crvs_val[0] = curve.Values[n][1];
-                                }
-                                if (end.Y < limits_crvs_pts[0].Y)
-                                {
-                                    limits_crvs_pts[0] = end;
-                                    limits_crvs_val[0] = curve.Values[n + 1][1];
-                                }
-                                if (start.Y > limits_crvs_pts[1].Y)
-                                {
-                                    limits_crvs_pts[1] = start;
-                                    limits_crvs_val[1] = curve.Values[n][1];
-                                }
-                                if (end.Y > limits_crvs_pts[1].Y)
-                                {
-                                    limits_crvs_pts[1] = end;
-                                    limits_crvs_val[1] = curve.Values[n + 1][1];
-                                }
+                                limits_crvs_pts[0] = start;
+                                limits_crvs_val[0] = curve.Values[n][1];
+                            }
+                            if (end.Y < limits_crvs_pts[0].Y)
+                            {
+                                limits_crvs_pts[0] = end;
+                                limits_crvs_val[0] = curve.Values[n + 1][1];
+                            }
+                            if (start.Y > limits_crvs_pts[1].Y)
+                            {
+                                limits_crvs_pts[1] = start;
+                                limits_crvs_val[1] = curve.Values[n][1];
+                            }
+                            if (end.Y > limits_crvs_pts[1].Y)
+                            {
+                                limits_crvs_pts[1] = end;
+                                limits_crvs_val[1] = curve.Values[n + 1][1];
                             }
 
                             g.DrawLine(pen, start, end);
                         }
-
-                        pen.Dispose();
                     }
 
                     // Points for drawing axies
@@ -390,23 +399,23 @@ namespace GPC.Utilities.Graphics
                     if (x_refs_pts.Length > 0)
                         g.TransformPoints(System.Drawing.Drawing2D.CoordinateSpace.Device, System.Drawing.Drawing2D.CoordinateSpace.World, x_refs_pts);
 
-                    double step = Math.Round(Math.Max(Math.Abs(_min), _max) / 5 / 10) * 10; //attention if _min and _max are = 0 this leads to infinite iteration below
+                    double step = GetAxisStep(Math.Max(Math.Abs(_min), _max) / 5.0);
                     List<PointF> y_refs_list = new List<PointF>();
                     List<string> y_values = new List<string>();
                     for (double y = 0; y < _max; y += step)
                     {
                         y_refs_list.Add(new PointF(0, (float)y * scale));
-                        y_values.Add(y.ToString());
+                        y_values.Add(y.ToString("G6"));
 
                         if (y_values.Count > 200) //exit if too much iteration
                         {
                             y = _max + 1;
                         }
                     }
-                    for (double y = 0; y > _min; y -= step)
+                    for (double y = -step; y > _min; y -= step) // zero already added by the previous loop
                     {
                         y_refs_list.Add(new PointF(0, (float)y * scale));
-                        y_values.Add(y.ToString());
+                        y_values.Add(y.ToString("G6"));
 
                         if (y_values.Count > 200) //exit if too much iteration
                         {
@@ -454,24 +463,28 @@ namespace GPC.Utilities.Graphics
                     g.DrawLine(Pens.Black, y_axis_pts[0], y_axis_pts[1]);
                     if (y_refs_pts.Length > 0)
                     {
-                        StringFormat format_axis = new StringFormat();
-                        format_axis.Alignment = StringAlignment.Far;
-                        format_axis.LineAlignment = StringAlignment.Center;
-                        for (int i = 0; i < y_refs_pts.Length; i++)
+                        using (StringFormat format_axis = new StringFormat())
                         {
-                            g.DrawLine(Pens.Black, y_refs_pts[i].X - 5, y_refs_pts[i].Y, y_refs_pts[i].X + 5, y_refs_pts[i].Y);
-                            g.DrawString(y_values[i], axisFont, Brushes.Black, y_refs_pts[i].X - 6, y_refs_pts[i].Y, format_axis);
-                        }
-                        format_axis.Alignment = StringAlignment.Center;
-                        format_axis.LineAlignment = StringAlignment.Near;
-                        g.DrawString(limits_crvs_val[0].ToString("N2"), axisFont, Brushes.Black, limits_crvs_pts[0], format_axis);
-                        if (showMaxMin && limits_maxs_val[0] != limits_crvs_val[0])
-                            g.DrawString(limits_maxs_val[0].ToString("N2"), axisFont, Brushes.Black, limits_maxs_pts[0], format_axis);
+                            format_axis.Alignment = StringAlignment.Far;
+                            format_axis.LineAlignment = StringAlignment.Center;
+                            for (int i = 0; i < y_refs_pts.Length; i++)
+                            {
+                                g.DrawLine(Pens.Black, y_refs_pts[i].X - 5, y_refs_pts[i].Y, y_refs_pts[i].X + 5, y_refs_pts[i].Y);
+                                g.DrawString(y_values[i], axisFont, Brushes.Black, y_refs_pts[i].X - 6, y_refs_pts[i].Y, format_axis);
+                            }
+                            format_axis.Alignment = StringAlignment.Center;
+                            format_axis.LineAlignment = StringAlignment.Near;
+                            if (hasCurvesLimits)
+                                g.DrawString(limits_crvs_val[0].ToString("N2"), axisFont, Brushes.Black, limits_crvs_pts[0], format_axis);
+                            if (showMaxMin && hasMaximumLimits && (!hasCurvesLimits || limits_maxs_val[0] != limits_crvs_val[0]))
+                                g.DrawString(limits_maxs_val[0].ToString("N2"), axisFont, Brushes.Black, limits_maxs_pts[0], format_axis);
 
-                        format_axis.LineAlignment = StringAlignment.Far;
-                        g.DrawString(limits_crvs_val[1].ToString("N2"), axisFont, Brushes.Black, limits_crvs_pts[1], format_axis);
-                        if (showMaxMin && limits_maxs_val[1] != limits_crvs_val[1])
-                            g.DrawString(limits_maxs_val[1].ToString("N2"), axisFont, Brushes.Black, limits_maxs_pts[1], format_axis);
+                            format_axis.LineAlignment = StringAlignment.Far;
+                            if (hasCurvesLimits)
+                                g.DrawString(limits_crvs_val[1].ToString("N2"), axisFont, Brushes.Black, limits_crvs_pts[1], format_axis);
+                            if (showMaxMin && hasMaximumLimits && (!hasCurvesLimits || limits_maxs_val[1] != limits_crvs_val[1]))
+                                g.DrawString(limits_maxs_val[1].ToString("N2"), axisFont, Brushes.Black, limits_maxs_pts[1], format_axis);
+                        }
                     }
 
                     // Draw reference lines
@@ -480,11 +493,13 @@ namespace GPC.Utilities.Graphics
                     {
                         using (Pen pen = new Pen(ref_line.Value))
                             g.DrawLine(pen, ref_line_start[r], new PointF(x_axis_pts[1].X, ref_line_start[r].Y));
-                        StringFormat format_refline = new StringFormat();
-                        format_refline.Alignment = StringAlignment.Near;
-                        format_refline.LineAlignment = ref_line.Key > 0 ? StringAlignment.Far : StringAlignment.Near;
+                        using (StringFormat format_refline = new StringFormat())
                         using (Brush brush = new SolidBrush(ref_line.Value))
+                        {
+                            format_refline.Alignment = StringAlignment.Near;
+                            format_refline.LineAlignment = ref_line.Key > 0 ? StringAlignment.Far : StringAlignment.Near;
                             g.DrawString(ref_line.Key.ToString("N2"), axisFont, brush, ref_line_start[r], format_refline);
+                        }
                         r++;
                     }
 
@@ -497,8 +512,6 @@ namespace GPC.Utilities.Graphics
                         r++;
                     }
 
-                    axisFont.Dispose();
-
                     DrawWatermark(g);
                 }
             }
@@ -506,10 +519,29 @@ namespace GPC.Utilities.Graphics
             {
                 //Xceed.Wpf.Toolkit.MessageBox.Show(App.Current.MainWindow, e.Message, "GraphicCreator class", System.Windows.MessageBoxButton.OK,
                 //    System.Windows.MessageBoxImage.Error);
+                image.Dispose();
                 return null;
             }
 
             return image;
+        }
+
+        /// <returns>A "round" step (1, 2 or 5 times a power of ten) greater or equal to <paramref name="rawStep"/>. 1 if <paramref name="rawStep"/> is not positive</returns>
+        private static double GetAxisStep(double rawStep)
+        {
+            if (!(rawStep > 0) || double.IsInfinity(rawStep))
+                return 1.0;
+
+            double magnitude = Math.Pow(10, Math.Floor(Math.Log10(rawStep)));
+            double normalized = rawStep / magnitude;
+
+            if (normalized <= 1.0)
+                return magnitude;
+            if (normalized <= 2.0)
+                return 2.0 * magnitude;
+            if (normalized <= 5.0)
+                return 5.0 * magnitude;
+            return 10.0 * magnitude;
         }
 
         private void DrawWatermark(System.Drawing.Graphics g)

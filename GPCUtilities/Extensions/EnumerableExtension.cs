@@ -86,7 +86,7 @@ namespace GPC.Utilities.Extensions
                 foreach (var item in list)
                 {
                     // moltiplicando l'hashcode precedente, cambia con l'ordine degli elementi nella lista (a + b) != ( b + a)
-                    hashcode = hashcode * -17 + item.GetHashCode();
+                    hashcode = hashcode * -17 + (item == null ? 0 : item.GetHashCode());
                 }
 
                 return hashcode; 
@@ -103,7 +103,7 @@ namespace GPC.Utilities.Extensions
                 foreach (var item in list)
                 {
                     // non moltiplicando l'hashcode precedente, funziona se la lista è scrambled (a + b) == ( b + a)
-                    hashcode += -17 * item.GetHashCode();
+                    hashcode += -17 * (item == null ? 0 : item.GetHashCode());
                 }
 
                 return hashcode; 
