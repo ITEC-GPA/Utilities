@@ -14,3 +14,4 @@ C:\Users\g.pacini\Documents\Repository\Utilities\GPCUtilities\bin\Release\netsta
 C:\Users\g.pacini\Documents\Repository\Utilities\GPCUtilities\obj\Release\netstandard2.0\GPCUtilities.csproj.AssemblyReference.cache
 C:\Users\g.pacini\Documents\Repository\Utilities\GPCUtilities\obj\Release\netstandard2.0\GPCUtilities.GeneratedMSBuildEditorConfig.editorconfig
 C:\Users\g.pacini\Documents\Repository\Utilities\GPCUtilities\obj\Release\netstandard2.0\GPCUtilities.csproj.CoreCompileInputs.cache
+C:\Users\g.pacini\Documents\Repository\Utilities\GPCUtilities\obj\Release\netstandard2.0\GPCUtilities.sourcelink.json

@@ -16,7 +16,7 @@ namespace GPC.Utilities.Assemblies
                     break;
                 }
             }
-            return false;
+            return _runningFromNUnit;
         }
 
         public static bool IsRunningFromNUnit

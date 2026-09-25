@@ -134,18 +134,19 @@ namespace GPC.Utilities.Fem
 		/// <param name="x3">X coordinate of the third vertex of the element</param> 
 		/// <param name="y3">Y coordinate of the third vertex of the element</param> 
 		/// <returns>The shape function</returns> 
+		/// <remarks>The vertices can be in clockwise or counterclockwise order: the signed area is used</remarks>
 		public static double LocalShapeFunction(int index, double x, double y, double x1, double y1, double x2, double y2, double x3, double y3)
 		{
-			double area = Math.Abs(x1 * y2 + y1 * x3 + x2 * y3 - x3 * y2 - y3 * x1 - x2 * y1) / 2;
+			double twiceArea = SignedTwiceArea(x1, y1, x2, y2, x3, y3);
 
 			switch (index)
 			{
 				case 1:
-					return (1.0 / (2.0 * area) * ((x2 * y3 - x3 * y2) + (y2 - y3) * x + (x3 - x2) * y));
+					return ((x2 * y3 - x3 * y2) + (y2 - y3) * x + (x3 - x2) * y) / twiceArea;
 				case 2:
-					return (1.0 / (2.0 * area) * ((x3 * y1 - x1 * y3) + (y3 - y1) * x + (x1 - x3) * y));
+					return ((x3 * y1 - x1 * y3) + (y3 - y1) * x + (x1 - x3) * y) / twiceArea;
 				case 3:
-					return (1.0 / (2.0 * area) * ((x1 * y2 - x2 * y1) + (y1 - y2) * x + (x2 - x1) * y));
+					return ((x1 * y2 - x2 * y1) + (y1 - y2) * x + (x2 - x1) * y) / twiceArea;
 				default:
 					throw new ArgumentException("indice da 1 a 3");
 			}
@@ -168,11 +169,17 @@ namespace GPC.Utilities.Fem
 		public static void LocalShapeFunction(double x, double y, double x1, double y1, double x2, double y2, double x3, double y3,
 			out double n1, out double n2, out double n3)
 		{
-			double area = Math.Abs(x1 * y2 + y1 * x3 + x2 * y3 - x3 * y2 - y3 * x1 - x2 * y1) / 2;
+			double twiceArea = SignedTwiceArea(x1, y1, x2, y2, x3, y3);
 
-			n1 = (1.0 / (2.0 * area) * ((x2 * y3 - x3 * y2) + (y2 - y3) * x + (x3 - x2) * y));
-			n2 = (1.0 / (2.0 * area) * ((x3 * y1 - x1 * y3) + (y3 - y1) * x + (x1 - x3) * y));
-			n3 = (1.0 / (2.0 * area) * ((x1 * y2 - x2 * y1) + (y1 - y2) * x + (x2 - x1) * y));
+			n1 = ((x2 * y3 - x3 * y2) + (y2 - y3) * x + (x3 - x2) * y) / twiceArea;
+			n2 = ((x3 * y1 - x1 * y3) + (y3 - y1) * x + (x1 - x3) * y) / twiceArea;
+			n3 = ((x1 * y2 - x2 * y1) + (y1 - y2) * x + (x2 - x1) * y) / twiceArea;
+		}
+
+		/// <returns>Twice the signed area of the triangle: positive if the vertices are counterclockwise, negative if clockwise</returns>
+		private static double SignedTwiceArea(double x1, double y1, double x2, double y2, double x3, double y3)
+		{
+			return x1 * y2 + y1 * x3 + x2 * y3 - x3 * y2 - y3 * x1 - x2 * y1;
 		}
 	}
 }

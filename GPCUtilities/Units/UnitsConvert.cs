@@ -290,8 +290,15 @@ namespace GPC.Utilities.Units
 			return Math.Pow(factor, exponent);
 		}
 
+		/// <summary>
+		/// Convert an absolute temperature
+		/// </summary>
+		/// <remarks>For temperature differences (e.g. thermal loads) use <see cref="ConvertDifference(double, TemperatureUnits, TemperatureUnits)"/>, the 32° offset must not be applied</remarks>
 		public static double Convert(double value, TemperatureUnits startTemperatureUnits, TemperatureUnits targetTemperatureUnits)
 		{
+			if (startTemperatureUnits == targetTemperatureUnits)
+				return value;
+
 			switch (startTemperatureUnits)
 			{
 				case TemperatureUnits.C: //FROM C TO F
@@ -303,6 +310,14 @@ namespace GPC.Utilities.Units
 				default:
 					throw new NotSupportedException();
 			}
+		}
+
+		/// <summary>
+		/// Convert a temperature difference (only the scale factor is applied, without the 32° offset)
+		/// </summary>
+		public static double ConvertDifference(double value, TemperatureUnits startTemperatureUnits, TemperatureUnits targetTemperatureUnits)
+		{
+			return value * GetFactor(startTemperatureUnits, targetTemperatureUnits);
 		}
 
 		private static double GetFactor(TemperatureUnits startTemperatureUnits, TemperatureUnits targetTemperatureUnits)

@@ -19,7 +19,7 @@ namespace GPC.Utilities.Fem
 				case 2:
 					return 0.5 * (1 + csi);
 				default:
-					throw new ArgumentException("indice da 1 a 4");
+					throw new ArgumentException("indice da 1 a 2");
 			}
 		}
 

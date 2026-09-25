@@ -554,7 +554,8 @@ namespace GPC.Utilities.Clone
             {
                 fieldsList.AddRange(
                     typeCache
-                        .GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy)
+                        // DeclaredOnly: the base types are visited by the loop, without it the protected/public fields of the base types are copied twice
+                        .GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly)
                         .Where(field => forceAllFields || IsTypeToDeepCopy(field.FieldType)));
 
                 typeCache = typeCache.BaseType;
@@ -781,7 +782,8 @@ namespace GPC.Utilities.Clone
             {
                 if (obj == null) return 0;
 
-                return obj.GetHashCode();
+                // Identity hash: the overridden GetHashCode can be expensive, can throw or can be inconsistent with the reference equality
+                return System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(obj);
             }
         }
     }
