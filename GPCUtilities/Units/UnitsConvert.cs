@@ -11,6 +11,14 @@ namespace GPC.Utilities.Units
 		public const PressureUnits DefaultPressureUnits = PressureUnits.MPa;
 		public const TemperatureUnits DefaultTemperatureUnits = TemperatureUnits.C;
 
+		// Exact definitions of the imperial units: 1 lb = 0.45359237 kg, standard gravity 9.80665 m/s², 1 in = 25.4 mm
+		private const double PoundInKg = 0.45359237;
+		private const double TonInPounds = 1000 / PoundInKg;
+		private const double PoundForceInN = PoundInKg * 9.80665;
+		private const double KipInN = 1000 * PoundForceInN;
+		private const double PsiInMPa = PoundForceInN / (25.4 * 25.4);
+		private const double KsiInMPa = 1000 * PsiInMPa;
+
 		public enum ForceUnits
 		{
 			N,
@@ -84,11 +92,11 @@ namespace GPC.Utilities.Units
 					break;
 
 				case ForceUnits.lbf:
-					factor *= 4.44822;
+					factor *= PoundForceInN;
 					break;
 
 				case ForceUnits.kip:
-					factor *= 4448.2216;
+					factor *= KipInN;
 					break;
 
 				default:
@@ -109,11 +117,11 @@ namespace GPC.Utilities.Units
 					break;
 
 				case ForceUnits.lbf:
-					factor /= 4.44822;
+					factor /= PoundForceInN;
 					break;
 
 				case ForceUnits.kip:
-					factor /= 4448.2216;
+					factor /= KipInN;
 					break;
 
 				default:
@@ -202,7 +210,7 @@ namespace GPC.Utilities.Units
 					break;
 
 				case MassUnits.lb:
-					factor /= 2204.623;
+					factor /= TonInPounds;
 					break;
 
 				default:
@@ -219,7 +227,7 @@ namespace GPC.Utilities.Units
 					break;
 
 				case MassUnits.lb:
-					factor *= 2204.623;
+					factor *= TonInPounds;
 					break;
 
 				default:
@@ -252,11 +260,11 @@ namespace GPC.Utilities.Units
 					break;
 
 				case PressureUnits.psi:
-					factor *= 0.00689476;
+					factor *= PsiInMPa;
 					break;
 
 				case PressureUnits.ksi:
-					factor *= 6.89475908;
+					factor *= KsiInMPa;
 					break;
 
 				default:
@@ -277,11 +285,11 @@ namespace GPC.Utilities.Units
 					break;
 
 				case PressureUnits.psi:
-					factor /= 0.00689476;
+					factor /= PsiInMPa;
 					break;
 
 				case PressureUnits.ksi:
-					factor /= 6.89475908;
+					factor /= KsiInMPa;
 					break;
 
 				default:

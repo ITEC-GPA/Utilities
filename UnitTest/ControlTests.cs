@@ -211,10 +211,10 @@ namespace GPC.Utilities.UnitTest
         {
             Assert.AreEqual(1000.0, UnitsConvert.Convert(1, ForceUnits.kN, ForceUnits.N, 1), 1e-12);
             Assert.AreEqual(100.0, UnitsConvert.Convert(1, ForceUnits.kN, ForceUnits.daN, 1), 1e-12);
-            // exact definitions: 1 lbf = 4.4482216152605 N, 1 kip = 1000 lbf (the constants have 6-7 significant digits)
-            Assert.AreEqual(4.4482216152605, UnitsConvert.Convert(1, ForceUnits.lbf, ForceUnits.N, 1), 4.45e-6);
-            Assert.AreEqual(4448.2216152605, UnitsConvert.Convert(1, ForceUnits.kip, ForceUnits.N, 1), 4.45e-3);
-            Assert.AreEqual(1000.0, UnitsConvert.Convert(1, ForceUnits.kip, ForceUnits.lbf, 1), 1e-3);
+            // exact definitions: 1 lbf = 0.45359237 kg × 9.80665 m/s² = 4.4482216152605 N, 1 kip = 1000 lbf
+            Assert.AreEqual(4.4482216152605, UnitsConvert.Convert(1, ForceUnits.lbf, ForceUnits.N, 1), 1e-12);
+            Assert.AreEqual(4448.2216152605, UnitsConvert.Convert(1, ForceUnits.kip, ForceUnits.N, 1), 1e-9);
+            Assert.AreEqual(1000.0, UnitsConvert.Convert(1, ForceUnits.kip, ForceUnits.lbf, 1), 1e-10);
         }
 
         [TestMethod]
@@ -233,10 +233,13 @@ namespace GPC.Utilities.UnitTest
         {
             Assert.AreEqual(1e6, UnitsConvert.Convert(1, PressureUnits.MPa, PressureUnits.Pa, 1), 1e-6);
             Assert.AreEqual(1000.0, UnitsConvert.Convert(1, PressureUnits.MPa, PressureUnits.kPa, 1), 1e-9);
-            // 1 psi = 6894.757293168 Pa, 1 ksi = 1000 psi
-            Assert.AreEqual(6894.757293168, UnitsConvert.Convert(1, PressureUnits.psi, PressureUnits.Pa, 1), 6894.76e-6);
-            Assert.AreEqual(6.894757293168, UnitsConvert.Convert(1, PressureUnits.ksi, PressureUnits.MPa, 1), 6.9e-6);
-            Assert.AreEqual(1000.0, UnitsConvert.Convert(1, PressureUnits.ksi, PressureUnits.psi, 1), 1e-3);
+            // 1 psi = 1 lbf/in² = 6894.757293168 Pa, 1 ksi = 1000 psi
+            Assert.AreEqual(6894.757293168, UnitsConvert.Convert(1, PressureUnits.psi, PressureUnits.Pa, 1), 1e-8);
+            Assert.AreEqual(6.894757293168, UnitsConvert.Convert(1, PressureUnits.ksi, PressureUnits.MPa, 1), 1e-11);
+            Assert.AreEqual(1000.0, UnitsConvert.Convert(1, PressureUnits.ksi, PressureUnits.psi, 1), 1e-10);
+            // psi coherent with lbf and inch
+            Assert.AreEqual(UnitsConvert.Convert(1, ForceUnits.lbf, ForceUnits.N, 1, LengthUnits.inch, LengthUnits.mm, -2),
+                UnitsConvert.Convert(1, PressureUnits.psi, PressureUnits.MPa, 1), 1e-15);
             Assert.AreEqual(1.0, UnitsConvert.ConvertToDefaultUnits(1000, PressureUnits.kPa, 1), 1e-12);
         }
 
@@ -245,7 +248,7 @@ namespace GPC.Utilities.UnitTest
         {
             Assert.AreEqual(1000.0, UnitsConvert.Convert(1, MassUnits.ton, MassUnits.kg, 1), 1e-12);
             // 1 lb = 0.45359237 kg
-            Assert.AreEqual(0.45359237, UnitsConvert.Convert(1, MassUnits.lb, MassUnits.kg, 1), 0.4536e-6);
+            Assert.AreEqual(0.45359237, UnitsConvert.Convert(1, MassUnits.lb, MassUnits.kg, 1), 1e-15);
             // steel 7850 kg/m³ = 7.85e-9 ton/mm³ (default units)
             Assert.AreEqual(7.85e-9, UnitsConvert.Convert(7850, MassUnits.kg, MassUnits.ton, 1, LengthUnits.m, LengthUnits.mm, -3), 1e-20);
             Assert.AreEqual(7.85e-9, UnitsConvert.ConvertToDefaultUnits(7850, MassUnits.kg, 1, LengthUnits.m, -3), 1e-20);
