@@ -1,0 +1,25 @@
+TEST DI REGRESSIONE PER METODO - 9 ottobre 2026
+
+Suite: dotnet test UnitTest/UnitTest.csproj -c Release
+Esito: 95 test superati, inclusi 12 nuovi in MethodRegressionTests.cs.
+
+Metodi e contratti aggiunti:
+- EnumerableExtension.ParallelForEachAsync (entrambi gli overload): ogni input
+  elaborato una sola volta, secondo argomento conservato, errori propagati,
+  sorgente vuota. Nessuna assunzione sull'ordine concorrente o sui tempi.
+- CloneByExpressionTrees.DeepCopyByExpressionTree: array rettangolare con null,
+  riferimenti condivisi mantenuti nella copia ma separati dall'originale.
+- ListExtension.Split / ArrayExtension.Split: contenitori indipendenti.
+- Error.AreEqualsDouble: soglia stretta, simmetria del segno vicino a zero.
+- Error.TwoValuesRelativeError: passaggio errore assoluto/relativo con soglia
+  esplicita; deviazione rispetto alla media, non differenza totale dei valori.
+- ErrorPropagation.DivisionSquareTolerance / DivisionTolerance: minimo espresso
+  in termini quadratici; radice applicata solo dal metodo non quadratico.
+- ErrorPropagation.SumSquareTolerance: rifiuto di NaN nelle incertezze.
+
+Coperture esistenti mantenute: tutti gli elementi delle funzioni di forma e
+relative derivate, conversioni e potenze delle unita', interpolazioni, medie,
+errori, arrotondamenti, enum, stringhe, hash e clonazione ciclica.
+Esclusi da questo incremento: semplici accessori, misurazioni temporali e
+serializzazione BinaryFormatter legacy (non abilitata nel runtime .NET 8).
+Nessuna modifica al codice di produzione o alle aspettative storiche.
