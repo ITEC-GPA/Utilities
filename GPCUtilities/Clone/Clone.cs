@@ -6,6 +6,7 @@
         /// Clone the <paramref name="obj"/> by calling <see cref="Serialization.Serialization.SerializeToStream"/> and then deserialiazing it by <see cref="Serialization.Serialization.DeserializeFromStream"/>
         /// </summary>
         /// <returns>The deep clone of <paramref name="obj"/></returns>
+        [System.Obsolete(Serialization.Obsolescence.BinaryFormatter)]
         public static object CloneObjectByMemoryStream(object obj)
         {
             return Serialization.Serialization.DeserializeFromStream(Serialization.Serialization.SerializeToStream(obj));

@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Bitmap charts (GraphicCreator) and installed fonts (FontUtilities). Apart from GPCUtilities because System.Drawing.Common
+       works only on Windows since .NET 6: GPCUtilities, and the libraries that use it, stay portable (architecture review R10).
+       Same namespace as before (GPC.Utilities.Graphics): a user of these classes adds the reference to this assembly. -->
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <RootNamespace>GPC.Utilities</RootNamespace>
+    <AssemblyName>GPCUtilities.Graphics</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Drawing.Common" Version="4.7.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\GPCUtilities\GPCUtilities.csproj" />
+  </ItemGroup>
+
+</Project>

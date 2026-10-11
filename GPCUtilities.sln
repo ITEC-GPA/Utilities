@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GPCUtilities", "GPCUtilitie
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTest", "UnitTest\UnitTest.csproj", "{0B89382A-F52D-4CCE-8A99-B01F86FB1B0C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GPCUtilities.Graphics", "GPCUtilities.Graphics\GPCUtilities.Graphics.csproj", "{4783578A-DC3E-41B4-B772-E196EA51D94C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -41,6 +43,18 @@ Global
 		{0B89382A-F52D-4CCE-8A99-B01F86FB1B0C}.Release|x64.Build.0 = Release|Any CPU
 		{0B89382A-F52D-4CCE-8A99-B01F86FB1B0C}.Release|x86.ActiveCfg = Release|Any CPU
 		{0B89382A-F52D-4CCE-8A99-B01F86FB1B0C}.Release|x86.Build.0 = Release|Any CPU
+		{4783578A-DC3E-41B4-B772-E196EA51D94C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4783578A-DC3E-41B4-B772-E196EA51D94C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4783578A-DC3E-41B4-B772-E196EA51D94C}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{4783578A-DC3E-41B4-B772-E196EA51D94C}.Debug|x64.Build.0 = Debug|Any CPU
+		{4783578A-DC3E-41B4-B772-E196EA51D94C}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{4783578A-DC3E-41B4-B772-E196EA51D94C}.Debug|x86.Build.0 = Debug|Any CPU
+		{4783578A-DC3E-41B4-B772-E196EA51D94C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4783578A-DC3E-41B4-B772-E196EA51D94C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4783578A-DC3E-41B4-B772-E196EA51D94C}.Release|x64.ActiveCfg = Release|Any CPU
+		{4783578A-DC3E-41B4-B772-E196EA51D94C}.Release|x64.Build.0 = Release|Any CPU
+		{4783578A-DC3E-41B4-B772-E196EA51D94C}.Release|x86.ActiveCfg = Release|Any CPU
+		{4783578A-DC3E-41B4-B772-E196EA51D94C}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\GPCUtilities\GPCUtilities.csproj" />
+    <ProjectReference Include="..\GPCUtilities.Graphics\GPCUtilities.Graphics.csproj" />
   </ItemGroup>
 
 </Project>

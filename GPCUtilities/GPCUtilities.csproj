@@ -11,8 +11,6 @@
     <Folder Include="Properties\" />
   </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="System.Drawing.Common" Version="4.7.3" />
-  </ItemGroup>
+  <!-- No System.Drawing.Common (Windows only since .NET 6): the bitmap charts and the fonts are in GPCUtilities.Graphics. -->
 
 </Project>

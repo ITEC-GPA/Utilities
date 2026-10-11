@@ -4,6 +4,9 @@ using System.Runtime.Serialization.Formatters.Binary;
 
 namespace GPC.Utilities.Serialization
 {
+    /// <summary>BinaryFormatter round trips. Obsolete (architecture review R10): BinaryFormatter executes code chosen by the data it reads,
+    /// so it is unsafe with files from others, and .NET 9 removed it.</summary>
+    [System.Obsolete(Obsolescence.BinaryFormatter)]
     public static class Serialization
     {
         public static byte[] SerializeToBytes<T>(T item)
