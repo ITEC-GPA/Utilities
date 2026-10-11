@@ -9,8 +9,7 @@
     ".NETStandard,Version=v2.0/": {
       "GPCUtilities/1.0.0": {
         "dependencies": {
-          "NETStandard.Library": "2.0.3",
-          "System.Drawing.Common": "4.7.3"
+          "NETStandard.Library": "2.0.3"
         },
         "runtime": {
           "GPCUtilities.dll": {}
@@ -20,14 +19,6 @@
       "NETStandard.Library/2.0.3": {
         "dependencies": {
           "Microsoft.NETCore.Platforms": "1.1.0"
-        }
-      },
-      "System.Drawing.Common/4.7.3": {
-        "runtime": {
-          "lib/netstandard2.0/System.Drawing.Common.dll": {
-            "assemblyVersion": "4.0.0.2",
-            "fileVersion": "4.6.29719.1"
-          }
         }
       }
     }
@@ -51,13 +42,6 @@
       "sha512": "sha512-st47PosZSHrjECdjeIzZQbzivYBJFv6P2nv4cj2ypdI204DO+vZ7l5raGMiX4eXMJ53RfOIg+/s4DHVZ54Nu2A==",
       "path": "netstandard.library/2.0.3",
       "hashPath": "netstandard.library.2.0.3.nupkg.sha512"
-    },
-    "System.Drawing.Common/4.7.3": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-B3+wwhAeoUQ6KeshWSq3IRLQiMoqPEzSHzyVyxTI/EbYuqIp90lXrRISlip2AF+5tj74ycIVPpnRY4M424HahA==",
-      "path": "system.drawing.common/4.7.3",
-      "hashPath": "system.drawing.common.4.7.3.nupkg.sha512"
     }
   }
 }
